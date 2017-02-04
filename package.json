@@ -6,11 +6,13 @@
   "dependencies": {
     "budo": "^9.4.7",
     "choo": "^4.1.0",
+    "pouchdb": "^6.1.1",
+    "pouchdb-authentication": "^0.5.5",
     "xhr": "^2.3.3"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "budo src/client.js:bundle.js --live --ssl"
   },
   "author": "kareniel",
   "license": "MIT"
