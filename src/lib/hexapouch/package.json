@@ -1,0 +1,14 @@
+{
+  "name": "hexapouch",
+  "version": "1.0.0",
+  "description": "very basic hexastore implementation on top of pouchdb, with pull-streams.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kareniel",
+  "license": "MIT",
+  "dependencies": {
+    "pull-stream": "^3.5.0"
+  }
+}

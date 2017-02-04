@@ -10,9 +10,13 @@
     "pouchdb-authentication": "^0.5.5",
     "xhr": "^2.3.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babelify": "^7.3.0",
+    "flow-bin": "^0.38.0"
+  },
   "scripts": {
-    "start": "budo src/client.js:bundle.js --live --ssl"
+    "start": "bash bin/watch.sh"
   },
   "author": "kareniel",
   "license": "MIT"

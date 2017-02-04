@@ -1,7 +1,8 @@
 module.exports = {
   namespace: 'app',
   state: {
-    user: null
+    user: null,
+    results: []
   },
   reducers: {
     update: (state, data) => data

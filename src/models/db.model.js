@@ -1,9 +1,11 @@
 const {REMOTE_DB} = require('../../.env')
 const PouchDB = require('pouchdb')
+const hexastore = require('../lib/hexapouch')
 PouchDB.plugin(require('pouchdb-authentication'))
 
 const local = new PouchDB('local_db')
 const remote = new PouchDB(REMOTE_DB)
+const db = hexastore(local)
 
 module.exports = {
   namespace: 'db',
@@ -13,6 +15,24 @@ module.exports = {
     update: (state, data) => data 
   },
   effects: {
+    del: function (state, data, send, done) {
+      db.del(data, err => {
+        if (err) return console.error(err)
+        console.log('done!', data)
+      })
+    },
+    get: function (state, data, send, done) {
+      db.get(data, (err, results) => {
+        if (err) return console.error(err)
+        send('app:update', {results}, done)
+      })
+    },
+    put: function (state, data, send, done) {
+      db.put(data, err => {
+        if (err) return console.error(err)
+        console.log('done!')
+      })
+    },
     login: function (state, data, send, done) {
       const {username, password} = data
 
