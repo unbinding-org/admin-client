@@ -18,10 +18,10 @@ module.exports = function (state, prev, send) {
         <div>
           <h2>${cmd}</h2>
           <form>
-            <input name='subject'>
-            <input name='predicate'>
-            <input name='object'>
-            <button onclick=${e => db(e, cmd)}>${cmd}</button>
+            <input class="input" name='subject'>
+            <input class="input" name='predicate'>
+            <input class="input" name='object'>
+            <button class="button" onclick=${e => db(e, cmd)}>${cmd}</button>
           </form>
           <hr>
         </div>`

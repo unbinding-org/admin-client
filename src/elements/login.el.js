@@ -10,13 +10,16 @@ module.exports = function (state, prev, send) {
   }
 
   return html`
-    <div>
-      <h2>login</h2>
-      <form>
-        <input name='username'>
-        <input name='password' type='password'>
-        <button onclick=${login}>Login</button>
-      </form>
-    </div>
+    <form>
+      <div class="control is-horizontal is-grouped">
+        <p class="control is-expanded">
+          <input class="input" name='username' placeholder='username'>
+        </p>
+        <p class="control is-expanded">
+          <input class="input" name='password' type='password'  placeholder='password'>
+        </p>
+        <button class="button" onclick=${login}>Login</button>
+      </div>
+    </form>
   `
 }
