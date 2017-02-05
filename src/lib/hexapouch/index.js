@@ -26,12 +26,14 @@ function put (triple, cb) {
   this.db.bulkDocs(docs, cb)
 }
 
-function get (arr, cb) {
+function get (query, cb) {
   const db = this.db
+  const str = getStr(query)
+
   const opts = {
     include_docs: true,
-    // startkey: 'spo::a',
-    // endkey: 'spo::a\uffff'
+    startkey: str,
+    endkey: str + '\uffff'
   }
 
   db.allDocs(opts, (err, res) => {
@@ -60,5 +62,26 @@ function del (triple, cb) {
     })
     this.db.bulkDocs(deleted, cb)
   })
-  
+}
+
+function getStr (query) {
+  const S = query.subject ? query.subject : null
+  const P = query.predicate ? query.predicate : null 
+  const O = query.object ? query.object : null
+
+  if (S & P & O)
+    return `spo::${S}::${P}::${O}`
+  if (S && P)
+    return `spo::${S}::${P}::`
+  if (P && O)
+    return `pos::${P}::${O}::`
+  if (S && O)  
+    return `sop::${S}::${O}::`
+  if (S)
+    return `spo::${S}::`
+  if (P)
+    return `pso::${P}::`
+  if (O)  
+    return `ops::${O}::`
+  return `spo::`
 }

@@ -9,17 +9,27 @@ module.exports = function (state, prev, send) {
     })
   }
 
+  function logout (e) {
+    e.preventDefault()
+    send('db:logout')
+  }
+
   return html`
     <form>
-      <div class="control is-horizontal is-grouped">
-        <p class="control is-expanded">
-          <input class="input" name='username' placeholder='username'>
-        </p>
-        <p class="control is-expanded">
-          <input class="input" name='password' type='password'  placeholder='password'>
-        </p>
-        <button class="button" onclick=${login}>Login</button>
-      </div>
+      ${state.app.user 
+        ? html`<div>
+            <button class="button" onclick=${logout}>logout</button>
+           </div>`
+        : html`<div class="control is-horizontal is-grouped">
+            <p class="control is-expanded">
+              <input class="input" name='username' placeholder='username'>
+            </p>
+            <p class="control is-expanded">
+              <input class="input" name='password' type='password'  placeholder='password'>
+            </p>
+            <button class="button" onclick=${login}>Login</button>
+           </div>`
+      }
     </form>
   `
 }
