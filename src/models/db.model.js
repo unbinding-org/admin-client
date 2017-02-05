@@ -12,6 +12,7 @@ local.sync(remote, {live: true, retry: true}).on('error', console.log)
 module.exports = {
   namespace: 'db',
   state: {
+    test: 123
   },
   reducers: {
     update: (state, data) => data 
@@ -20,7 +21,7 @@ module.exports = {
     del: function (state, data, send, done) {
       db.del(data, err => {
         if (err) return console.error(err)
-        console.log('done!', data)
+        send('app:removeResult', data, done)
       })
     },
     get: function (state, data, send, done) {
@@ -32,7 +33,7 @@ module.exports = {
     put: function (state, data, send, done) {
       db.put(data, err => {
         if (err) return console.error(err)
-        console.log('done!')
+        send('app:addResult', data, done)
       })
     },
     login: function (state, data, send, done) {

@@ -21,11 +21,7 @@ module.exports = el => (state, prev, send) => html`
     </div>
 
     <div class="section">
-      <div class="columns">
-        <div class="column is-one-third">
-          ${el(state,prev, send)}
-        </div>
-      </div>
+      ${el(state,prev, send)}
     </div>
   </div>`
   

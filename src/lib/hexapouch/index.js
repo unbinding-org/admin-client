@@ -39,7 +39,7 @@ function get (query, cb) {
   db.allDocs(opts, (err, res) => {
     if (err) return cb(err)
 
-    cb(null, res.rows.map(r => r.doc))
+    cb(null, res.rows.map(r => r.doc.triple))
   })
 } 
 
