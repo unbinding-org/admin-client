@@ -1,5 +1,4 @@
 const html = require('choo/html')
-const login = require('./login.el')
 
 module.exports = el => (state, prev, send) => html`
   <div id="layout">
@@ -15,7 +14,7 @@ module.exports = el => (state, prev, send) => html`
       </div>
       <div class="nav-right">
         <span class="nav-item">
-        ${login(state,prev, send)}
+        
         </span>
       </div>
     </div>
