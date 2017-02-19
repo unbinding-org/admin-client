@@ -13,9 +13,9 @@ module.exports = el => (state, prev, send) => html`
         <h1 class="title nav-item">admin-client</h1>
       </div>
       <div class="nav-right">
-        <span class="nav-item">
-        
-        </span>
+        <a class="nav-item" onclick=${e => send('db:logout')}>
+          Logout
+        </a>
       </div>
     </div>
 

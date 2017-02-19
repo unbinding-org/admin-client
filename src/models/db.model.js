@@ -7,8 +7,6 @@ const remote = new PouchDB(REMOTE_DB)
 const hexastore = require('../lib/hexapouch')
 const db = hexastore(local)
 
-local.sync(remote, {live: true, retry: true}).on('error', console.log)
-
 module.exports = {
   namespace: 'db',
   state: {
@@ -36,16 +34,25 @@ module.exports = {
         send('app:addResult', data, done)
       })
     },
+    search: function (state, data, send, done) {
+      db.search(data, (err, results) => {
+        send('app:update', {searchResults: results}, done)
+      })
+    },
     login: function (state, data, send, done) {
       const {username, password} = data
 
       remote.login(username, password, (err, res) => {
         if (err) return console.error(err)
 
+        local.sync(remote, {live: true, retry: true}).on('error', console.log)
+
         send('app:update', {user: res}, done)
+        send('app:navigate', '/app', done)
       })
     },
     logout: function (state, data, send, done) {
+      send('app:navigate', '/', done)
       remote.logout((err, res) => {
         if (err) return console.error(err)
         send('app:update', {user: null}, done)

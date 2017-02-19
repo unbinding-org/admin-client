@@ -1,9 +1,7 @@
-const pull = require('pull-stream')
-
 // properties with range of plain text
-const plainTextProperties = [
-  'definition'
-]
+const plainTextProperties = ['definition']
+// predicates who's value will be used for search 
+const keysToSearchIn = ['label', 'prefLabel']
 
 module.exports = function (localDB) {
   return new Hexastore(localDB)
@@ -14,24 +12,7 @@ function Hexastore (localDB) {
   this.put = put
   this.get = get
   this.del = del
-}
-
-function createKeys (S, P, O) {
-  if (plainTextProperties.includes(P)) {
-    return [
-      `spo::${S}::${P}::${__plainText__}`,
-      `spo::${P}::${S}::${__plainText__}`
-    ]
-  }
-
-  return [
-    `spo::${S}::${P}::${O}`,
-    `sop::${S}::${O}::${P}`,
-    `ops::${O}::${P}::${S}`,
-    `osp::${O}::${S}::${P}`,
-    `pso::${P}::${S}::${O}`,
-    `pos::${P}::${O}::${S}`
-  ]
+  this.search = search
 }
 
 function put (triple, cb) {
@@ -42,8 +23,8 @@ function put (triple, cb) {
   this.db.bulkDocs(docs, cb)
 }
 
-function get (query, cb) {
-  const str = getStr(query)
+function get (triple, cb) {
+  const str = createIndexKey(triple)
 
   const opts = {
     include_docs: true,
@@ -63,7 +44,7 @@ function del (triple, cb) {
   const P = triple.predicate
   const O = triple.object 
   const keys = createKeys(S, P, O)
-  
+
   this.db.allDocs({include_docs: true, keys}, (err, res) => {
     const deleted = res.rows.map(row => {
       row.doc._deleted = true
@@ -73,10 +54,67 @@ function del (triple, cb) {
   })
 }
 
-function getStr (query) {
-  const S = query.subject || null
-  const P = query.predicate || null 
-  const O = query.object || null
+function search (term, cb) {
+  const normalizedTerm = term.toLowerCase()
+  const keys = keysToSearchIn
+    .map(predicate => createIndexKey({predicate}))
+    .sort()
+
+  const opts = {
+    include_docs: true,
+    startkey: keys[0],
+    endkey: keys[keys.length - 1] + '\uffff'
+  }
+  // First get docs that relate to the searchable predicates
+  this.db.allDocs(opts, (err, res) => {
+    if (err) return cb(err)
+
+    const keys = res.rows
+      .filter(row => row.doc.triple.object.toLowerCase().includes(term))
+      .map(row => createIndexKey({subject: row.doc.triple.subject}))
+      .sort()
+
+    const opts = {
+      include_docs: true,
+      startkey: keys[0],
+      endkey: keys[keys.length - 1] + '\uffff'
+    }
+
+    // Then get docs that have the search term has the value of those predicates
+    this.db.allDocs(opts, (err, res) => {
+      if (err) return cb(err)
+
+      const triples = res.rows.map(row => row.doc.triple)
+      const subjects = Array.from(
+        new Set(
+          triples
+            .filter(triple => keysToSearchIn.includes(triple.predicate))
+            .filter(triple => triple.object.toLowerCase().includes(term))
+            .map(triple => triple.subject)
+      ))
+
+      const resources = subjects.map(subject => {
+        const props = triples.filter(triple => triple.subject === subject)
+        return props.reduce((p, c) => {
+          p[c.predicate] = c.object
+          return p
+        }, {})
+      })
+
+      cb(null, resources)
+    })
+
+  })
+}
+
+function getResourceEntity (subject) {
+  
+}
+
+function createIndexKey (triple) {
+  const S = triple.subject || null
+  const P = triple.predicate || null 
+  const O = triple.object || null
 
   if (S & P & O)
     return `spo::${S}::${P}::${O}`
@@ -93,4 +131,22 @@ function getStr (query) {
   if (O)  
     return `ops::${O}::`
   return `spo::`
+}
+
+function createKeys (S, P, O) {
+  if (plainTextProperties.includes(P)) {
+    return [
+      `spo::${S}::${P}::${__plainText__}`,
+      `spo::${P}::${S}::${__plainText__}`
+    ]
+  }
+
+  return [
+    `spo::${S}::${P}::${O}`,
+    `sop::${S}::${O}::${P}`,
+    `ops::${O}::${P}::${S}`,
+    `osp::${O}::${S}::${P}`,
+    `pso::${P}::${S}::${O}`,
+    `pos::${P}::${O}::${S}`
+  ]
 }

@@ -3,11 +3,14 @@ module.exports = {
   state: {
     loggingIn: false,
     user: null,
-    results: []
+    results: [],
+    searchResults: []
   },
   effects: {
-    login: (state, data, send, done) => {
-      send('app:update', {loggingIn: true}, done)
+    navigate: (state, data, send, done) => {
+      const a = document.createElement('a')
+      a.setAttribute('href', data)
+      a.click()
     }
   },
   reducers: {
