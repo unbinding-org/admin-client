@@ -108,7 +108,7 @@ function search (term, cb) {
 }
 
 function getResourceEntity (subject) {
-  
+
 }
 
 function createIndexKey (triple) {

@@ -7,6 +7,8 @@ const remote = new PouchDB(REMOTE_DB)
 const hexastore = require('../lib/hexapouch')
 const db = hexastore(local)
 
+const uuid = require('../lib/uuid')
+
 module.exports = {
   namespace: 'db',
   state: {
@@ -16,6 +18,19 @@ module.exports = {
     update: (state, data) => data 
   },
   effects: {
+    createResource: function (state, data, send, done) {
+      const id = uuid()
+      const triple = {subject: id, predicate: 'label', object: data}
+      db.get({subject: id}, (err, results) => {
+        if (err) return console.log(err)
+        if (!results.length) {
+          db.put(triple, err => {
+            if (err) return console.error(err)
+            send('app:addResult', triple, done)
+          })
+        }
+      })
+    },
     del: function (state, data, send, done) {
       db.del(data, err => {
         if (err) return console.error(err)

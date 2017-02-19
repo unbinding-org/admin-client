@@ -14,12 +14,26 @@ module.exports = function (state, prev, send) {
     e.target.form.object.value = ''
   }
 
+  function create (e) {
+    e.preventDefault()
+    send('db:createResource', e.target.form.label.value)
+  }
+
   const cmds = ['put', 'get', 'del']
 
   return html`
     <div class="container">
       <div class="columns">
         <div class="column is-one-third">
+          
+          <form class="form">
+            <label class="label">New resource:</label>
+            <input class="input" name="label">
+            <button class="button" onclick=${create}>
+              Create
+            </button>
+          </form>
+          
           ${cmds.map(cmd => html`
             <div>
               <h2>${cmd}</h2>
