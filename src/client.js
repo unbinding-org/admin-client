@@ -14,7 +14,8 @@ app.router([
   ['/contact', require('./website/pages/contact.page')],
 
   // app
-  ['/app', layout(require('./pages/main.page'))]
+  ['/ontology', layout(require('./pages/onto-editor.page'))],
+  ['/document', layout(require('./pages/doc-editor.page'))]
 ])
 
 const tree = app.start()

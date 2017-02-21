@@ -63,7 +63,7 @@ module.exports = {
         local.sync(remote, {live: true, retry: true}).on('error', console.log)
 
         send('app:update', {user: res}, done)
-        send('app:navigate', '/app', done)
+        send('app:navigate', '/ontology', done)
       })
     },
     logout: function (state, data, send, done) {
