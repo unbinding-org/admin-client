@@ -6,10 +6,10 @@ module.exports = el => (state, prev, send) => html`
     <div class="nav">
       <div class="nav-left">
         <a class="nav-item" href="/ontology">ontology</a>
-        <a class="nav-item" href="/document">document</a>
+        <a class="nav-item" href="/browser">documents</a>
       </div>
       <div class="nav-center">
-        <h1 class="title nav-item">admin-client</h1>
+        <h1 class="title nav-item"></h1>
       </div>
       <div class="nav-right">
         <a class="nav-item">

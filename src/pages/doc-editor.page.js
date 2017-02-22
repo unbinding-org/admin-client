@@ -1,7 +1,13 @@
 const html = require('choo/html')
-const autocomplete = require('../elements/autocomplete.el')
 
 module.exports = function (state, prev, send) {
+  const {docId} = state.location.params
+  const doc = state.app.docs.find(doc => doc._id === docId)
+
+  if (!doc) {
+    return send('app:navigate', '/browser')
+  }
+
   const search = e => send('app:update', {codeSearch: e.target.value})
 
   function filterKeyword (code) {
@@ -27,9 +33,9 @@ module.exports = function (state, prev, send) {
   return html`
     <div class="container-fluid">
       <div class="columns">
-        <div class="column is-8">
+        <div class="column is-9">
           <div style="height: 80vh; overflow: scroll; padding: 1em">
-            ${state.app.doc.sections.map((section, index) => html`
+            ${doc.sections.map((section, index) => html`
               <div class="columns">
                 <div class="column">
                   <div>

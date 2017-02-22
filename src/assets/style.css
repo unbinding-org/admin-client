@@ -5,3 +5,7 @@ body {
 *:hover {
   transition: 0.5s;
 }
+
+a.document-list--item:hover > div {
+  background: #EEE;
+}

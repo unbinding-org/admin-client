@@ -3,7 +3,12 @@ const login = require('../elements/login.el.js')
 const footer = require('../elements/footer.el.js')
 
 module.exports = (state, prev, send) => {
-  const showModal = e => send('app:update', {modalVisible: true})
+  const showModal = e => {
+    if (state.app.user) {
+      return send('app:navigate', '/browser')
+    }
+    send('app:update', {modalVisible: true})
+  }
   const hideModal = e => send('app:update', {modalVisible: false})
 
   return html`

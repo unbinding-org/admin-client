@@ -3,6 +3,7 @@ const doc = require('../assets/dh1')
 module.exports = {
   namespace: 'app',
   state: {
+    docs: require('../assets/docs'),
     codeSearch: '',
     codes: [{
       label:'Fermentum Porttitor',
@@ -14,7 +15,6 @@ module.exports = {
       label:'Nulla',
       color: 'purple'
     }],
-    doc: doc,
     loggingIn: false,
     user: null,
     results: [],
@@ -29,6 +29,7 @@ module.exports = {
   },
   reducers: {
     update: (state, data) => data,
+    addDoc: (state, data) => ({docs: [...state.docs, data]}),
     addHighlight: (state, data) => {
       const index = state.doc.sections.findIndex(s => s.id === data.id)
       const sections = [
