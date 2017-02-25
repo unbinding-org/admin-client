@@ -1,61 +1,23 @@
 const html = require('choo/html')
+const docSection = require('../elements/doc-section.el')
+const highlightMenu = require('../elements/highlight-menu.el')
 
 module.exports = function (state, prev, send) {
-  const {docId} = state.location.params
-  const doc = state.app.docs.find(doc => doc._id === docId)
+  let doc = state.app.doc
 
   if (!doc) {
-    return send('app:navigate', '/browser')
-  }
-
-  const search = e => send('app:update', {codeSearch: e.target.value})
-
-  function filterKeyword (code) {
-    return code.label.toLowerCase().includes(state.app.codeSearch.toLowerCase())
-  }
-
-  function addHighlight (e) {
-    const selRange = window.getSelection().getRangeAt(0)
-    const {startContainer, endContainer, startOffset, endOffset} = selRange
-    const el = startContainer.parentElement
-    const id = parseInt(el.id.slice(2))
-    
-    if (startContainer === endContainer) {
-      const highlight = {start: startOffset, end: endOffset}
-      const section = state.app.doc.sections.find(s => s.id === id)
-      const newSection = Object.assign({}, section, {
-        highlights: section.highlights.concat([highlight])
-      })
-      send('app:addHighlight', newSection)
-    }
+    const {docId} = state.location.params
+    doc = state.app.docs.find(doc => doc._id === docId)
+    send('app:update', {doc})
   }
 
   return html`
     <div class="container-fluid">
+      ${highlightMenu(state, prev, send)}
       <div class="columns">
         <div class="column is-9">
           <div style="height: 80vh; overflow: scroll; padding: 1em">
-            ${doc.sections.map((section, index) => html`
-              <div class="columns">
-                <div class="column">
-                  <div>
-                    ${section.highlights.map(h => html`<span>[</span>`)}
-                  </div>
-                </div>
-
-                <div class="column is-1">
-                  <small>
-                    ${section.id}
-                  </small>
-
-                </div>
-                <div class="column is-10">
-                  <div id="\$\$${section.id}" class="box">
-                    ${section.content}
-                  </div>
-                </div>
-              </div>
-            `)}
+            ${doc.sections.map(section => docSection(section, prev, send))}
           </div>
         </div>
         <div class="column">
@@ -89,4 +51,38 @@ module.exports = function (state, prev, send) {
       </div>
     </div>
   `
+
+  function search (e) { 
+    return send('app:update', {codeSearch: e.target.value}) 
+  }
+
+  function filterKeyword (code) {
+    return code.label.toLowerCase().includes(state.app.codeSearch.toLowerCase())
+  }
+
+  function addHighlight (e) {
+    const selRange = window.getSelection().getRangeAt(0)
+    const {startContainer, endContainer, startOffset, endOffset} = selRange
+    const el = startContainer.parentElement
+    const id = parseInt(el.id.slice(2))
+    
+    if (startContainer === endContainer) {
+      const highlight = {start: startOffset, end: endOffset}
+      const sectionId = doc.sections.findIndex(s => s.id === id)
+      const oldSection = doc.sections[sectionId]
+      const newSection = Object.assign({}, oldSection, {
+        highlights: oldSection.highlights.concat([highlight])
+      })
+
+      const newDoc = Object.assign({}, doc, {
+        sections: [
+          ...doc.sections.slice(0, sectionId),
+          newSection,
+          ...doc.sections.slice(sectionId + 1)
+        ]
+      })
+
+      send('app:update', {doc: newDoc})
+    }
+  }
 }
