@@ -1,13 +1,13 @@
 const html = require('choo/html')
 
 module.exports = function (state, prev, send) {
-  const isDisabled = state.db.loggingIn ? 'is-disabled' : ''
-  const isLoading = state.db.loggingIn ? 'is-loading' : ''
+  const isDisabled = state.app.loggingIn ? 'is-disabled' : ''
+  const isLoading = state.app.loggingIn ? 'is-loading' : ''
 
   function login (e) {
     e.preventDefault()
     const {username, password} = e.target.form
-    send('db:login', {username: username.value, password: password.value})
+    send('app:login', {username: username.value, password: password.value})
   }
 
   return html`

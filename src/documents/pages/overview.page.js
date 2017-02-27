@@ -1,5 +1,5 @@
 const html = require('choo/html')
-const uuid = require('../lib/uuid')
+const uuid = require('../../lib/uuid')
 
 class DocumentSection {
   constructor (id, content) {

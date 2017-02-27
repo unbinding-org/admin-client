@@ -1,5 +1,5 @@
 const html = require('choo/html')
-const docSection = require('../elements/doc-section.el')
+const docSection = require('../elements/section.el')
 const highlightMenu = require('../elements/highlight-menu.el')
 
 module.exports = function (state, prev, send) {

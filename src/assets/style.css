@@ -2,10 +2,14 @@ body {
   font-family: 'Noto Sans', sans-serif;  
 }
 
-*:hover {
-  transition: 0.5s;
-}
-
 a.document-list--item:hover > div {
   background: #EEE;
+}
+
+#autocomplete > .menu {
+  background-color: white; 
+  border: 1px solid grey;
+  width: 100%;
+  position: absolute;
+  z-index: 100;
 }

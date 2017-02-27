@@ -1,4 +1,5 @@
-const layout = require('./elements/layout.el')
+const layout = require('./shared/pages/layout.el')
+const concepts = require('./concepts/pages/layout.el')
 
 module.exports = [{default: '/'}, [
   // website
@@ -9,8 +10,13 @@ module.exports = [{default: '/'}, [
   ['/contact', require('./website/pages/contact.page')],
 
   // app,
-  ['/404', layout(require('./pages/404.page'))],
-  ['/ontology', layout(require('./pages/onto-editor.page'))],
-  ['/document/:docId', layout(require('./pages/doc-editor.page'))],
-  ['/browser', layout(require('./pages/doc-browser.page'))]
+  ['/404', layout(require('./shared/pages/404.page'))],
+
+  // ontology editor
+  ['/concepts', layout(concepts(require('./concepts/pages/overview.page')))],
+  ['/concepts/:conceptId', layout(concepts(require('./concepts/pages/single.page')))],
+
+  // document editor
+  ['/documents', layout(require('./documents/pages/overview.page'))],
+  ['/documents/:docId', layout(require('./documents/pages/single.page'))]
 ]]

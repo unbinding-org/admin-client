@@ -65,12 +65,13 @@ function search (term, cb) {
     startkey: keys[0],
     endkey: keys[keys.length - 1] + '\uffff'
   }
+
   // First get docs that relate to the searchable predicates
   this.db.allDocs(opts, (err, res) => {
     if (err) return cb(err)
 
     const keys = res.rows
-      .filter(row => row.doc.triple.object.toLowerCase().includes(term))
+      .filter(row => row.doc.triple.object.toLowerCase().includes(normalizedTerm))
       .map(row => createIndexKey({subject: row.doc.triple.subject}))
       .sort()
 
@@ -85,21 +86,29 @@ function search (term, cb) {
       if (err) return cb(err)
 
       const triples = res.rows.map(row => row.doc.triple)
-      const subjects = Array.from(
-        new Set(
-          triples
-            .filter(triple => keysToSearchIn.includes(triple.predicate))
-            .filter(triple => triple.object.toLowerCase().includes(term))
-            .map(triple => triple.subject)
-      ))
+      const subjects = triples
+        .filter(triple => keysToSearchIn.includes(triple.predicate))
+        .filter(triple => triple.object.toLowerCase().includes(normalizedTerm))
+        .map(triple => triple.subject)
 
-      const resources = subjects.map(subject => {
-        const props = triples.filter(triple => triple.subject === subject)
-        return props.reduce((p, c) => {
-          p[c.predicate] = c.object
-          return p
-        }, {})
+      
+
+      const resources = subjects.map(subjectId => {
+        let resource = {}
+
+        const props = triples.filter(triple => triple.subject === subjectId)
+          
+        props.forEach(triple => {
+          resource[triple.predicate] = triple.object
+        })
+
+        resource.id = subjectId
+
+        return resource 
       })
+
+      
+      
 
       cb(null, resources)
     })
