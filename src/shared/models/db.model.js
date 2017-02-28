@@ -16,6 +16,20 @@ module.exports = {
     put: (state, data, send, done) => db.put(data, done),
     search: (state, data, send, done) => db.search(data, done),
 
+    getSession: (state, data, send, done) => {
+      remote.getSession((err, res) => {
+        if (err || !res.userCtx.name) {
+          return console.error(err || res)
+        }
+
+        db.search('', (err, concepts) => {
+          local.sync(remote, {live: true, retry: true})
+          send('app:update', {concepts, user: res.userCtx}, done)
+          send('location:set', '/concepts', done)
+        })
+      })
+    },
+
     login: function (state, data, send, done) {
       const {username, password} = data
 
@@ -23,7 +37,8 @@ module.exports = {
         if (err) return console.error(err)
 
         local.sync(remote, {live: true, retry: true}).on('error', done)
-        done(null)
+        send('app:update', {user: res.userCtx}, done)
+        send('location:set', '/concepts', done)
       })
     },
 
@@ -31,24 +46,14 @@ module.exports = {
       remote.logout((err, res) => {
         if (err) return done(err)
 
-        done(null)
+        send('location:set', '/', done)
       })
     }
   },
   subscriptions: {
     setup: (send, done) => {
       // if user is logged it, save his info in state
-      remote.getSession((err, res) => {
-        if (err || !res.userCtx.name) return console.error(err || res)
 
-        send('app:update', {user: res.userCtx}, done)
-
-        local.sync(remote, {live: true, retry: true})
-
-        db.search('', (err, concepts) => {
-          send('app:update', {concepts}, done)
-        })
-      })
     }
   }
 }

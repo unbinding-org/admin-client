@@ -7,7 +7,13 @@ const routes = [{
   route: '/documents'
 }]
 
-module.exports = el => (state, prev, send) => html`
+module.exports = el => (state, prev, send) => {
+  if (!state.app.user) {
+    send('location:set', '/')
+    return html`<div></div>`
+  }
+
+  return html`
   <div id="app">
     <nav class="nav has-shadow">
       <div class="container">
@@ -27,8 +33,8 @@ module.exports = el => (state, prev, send) => html`
     <div class="section">
       ${el(state,prev, send)}
     </div>
-  </div>
-`
+  </div>`
+}
 
 function menuItems (path) {
   return routes.map(item => html`

@@ -39,7 +39,7 @@ module.exports = {
     logout: (state, data, send, done) => {
       send('db:logout', err => {
         if (err) return console.error(err)
-        send('location:set', '/concepts', done)
+        send('location:set', '/', done)
         send('app:update', {user: null}, done)
       })
     }
