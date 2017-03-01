@@ -8,8 +8,7 @@ const routes = [{
 }]
 
 module.exports = el => (state, prev, send) => {
-  if (!state.app.user) {
-    send('location:set', '/')
+  if (!state.user) {
     return html`<div></div>`
   }
 
@@ -22,9 +21,9 @@ module.exports = el => (state, prev, send) => {
         </div>
         <div class="nav-right">
           <a class="nav-item">
-            user: ${state.app.user ? state.app.user.name : 'not logged in'}
+            user: ${state.user.name}
           </a>
-          <a class="nav-item" onclick=${e => send('app:logout')}>
+          <a class="nav-item" onclick=${e => send('logout')}>
             Logout
           </a>
         </div>

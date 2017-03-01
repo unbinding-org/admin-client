@@ -7,7 +7,7 @@ module.exports = function (state, prev, send) {
   function login (e) {
     e.preventDefault()
     const {username, password} = e.target.form
-    send('app:login', {username: username.value, password: password.value})
+    send('login', {username: username.value, password: password.value})
   }
 
   return html`

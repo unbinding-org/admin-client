@@ -11,34 +11,32 @@ module.exports = {
   namespace: 'db',
   reducers: { update: (state, data) => data },
   effects: {
-    del: (state, data, send, done) => db.del(data, done),
-    get: (state, data, send, done) => db.get(data, done),
-    put: (state, data, send, done) => db.put(data, done),
+    del:    (state, data, send, done) => db.del(data, done),
+    get:    (state, data, send, done) => db.get(data, done),
+    put:    (state, data, send, done) => db.put(data, done),
     search: (state, data, send, done) => db.search(data, done),
 
     getSession: (state, data, send, done) => {
       remote.getSession((err, res) => {
-        if (err || !res.userCtx.name) {
-          return console.error(err || res)
-        }
-
-        db.search('', (err, concepts) => {
+        if (err) {
+          done(err)
+        } else if (!res.userCtx.name) {
+          done(new Error('Not logged in.'))
+        } else {
           local.sync(remote, {live: true, retry: true})
-          send('app:update', {concepts, user: res.userCtx}, done)
-          send('location:set', '/concepts', done)
-        })
+          done(null, res.userCtx)
+        }
       })
     },
 
     login: function (state, data, send, done) {
       const {username, password} = data
 
-      remote.login(username, password, (err, res) => {
-        if (err) return console.error(err)
+      remote.login(username, password, (err, user) => {
+        if (err) { return done(err) }
 
         local.sync(remote, {live: true, retry: true}).on('error', done)
-        send('app:update', {user: res.userCtx}, done)
-        send('location:set', '/concepts', done)
+        done(null, user)
       })
     },
 
@@ -48,12 +46,6 @@ module.exports = {
 
         send('location:set', '/', done)
       })
-    }
-  },
-  subscriptions: {
-    setup: (send, done) => {
-      // if user is logged it, save his info in state
-
     }
   }
 }

@@ -36,7 +36,7 @@ module.exports = function (state, prev, send) {
   const search = e => send('app:update', {codeSearch: e.target.value})
 
   function filterKeyword (code) {
-    return code.label.toLowerCase().includes(state.app.codeSearch.toLowerCase())
+    return code.label.toLowerCase().includes(state.codeSearch.toLowerCase())
   }
 
   function onFileSelect (e) {
@@ -115,7 +115,7 @@ module.exports = function (state, prev, send) {
 
           </div>
           <div style="height: 80vh; overflow: scroll; padding: 1em">
-            ${state.app.docs.map((doc, index) => html`
+            ${state.docs.map((doc, index) => html`
               <a href="/document/${doc._id}" class="document-list--item">
                 <div class="card">
                   <div class="card-content" style="padding: 1rem;">
