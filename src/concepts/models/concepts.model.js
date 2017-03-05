@@ -4,6 +4,14 @@ module.exports = {
   state: {
     searchResults: []
   },
+  subscriptions: {
+    init: function (send, done) {
+      // make sure we have all the concepts in state on init
+      send('db:search', '', (err, concepts) => {
+        send('app:update', {concepts}, done)
+      })
+    },
+  },
   reducers: {
     update: (state, data) => data
   },
